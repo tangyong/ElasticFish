@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,15 +39,15 @@
  */
 package org.glassfish.virtualization.local;
 
+import javax.inject.Inject;
+
 import com.sun.enterprise.config.serverbeans.Domain;
-import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.hk2.inject.Injector;
+
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.virtualization.config.ServerPoolConfig;
 import org.glassfish.virtualization.spi.ServerPool;
 import org.glassfish.virtualization.spi.ServerPoolFactory;
 import org.glassfish.virtualization.spi.TemplateRepository;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -58,10 +58,16 @@ import org.jvnet.hk2.annotations.Service;
 @Service(name="Native")
 public class LocalServerPoolFactory implements ServerPoolFactory {
 
-    final private TemplateRepository templateRepository;
-    final private Domain domain;
-    final private ServerContext environment;
+	@Inject
+    TemplateRepository templateRepository;
+	
+	@Inject
+    Domain domain;
+	
+	@Inject
+    ServerContext environment;
 
+    /*
     public LocalServerPoolFactory(@Inject TemplateRepository templateRepository,
                                   @Inject Domain domain,
                                   @Inject ServerContext environment) {
@@ -69,6 +75,10 @@ public class LocalServerPoolFactory implements ServerPoolFactory {
         this.domain = domain;
         this.environment = environment;
     }
+    */
+    //TangYong Added
+    public LocalServerPoolFactory() {
+     }
 
     @Override
     public ServerPool build(ServerPoolConfig config) {

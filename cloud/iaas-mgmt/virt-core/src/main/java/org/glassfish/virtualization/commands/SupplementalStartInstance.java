@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,6 +39,8 @@
  */
 package org.glassfish.virtualization.commands;
 
+import javax.inject.Inject;
+
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
@@ -46,14 +48,13 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.Supplemental;
 import org.glassfish.hk2.Factory;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.virtualization.config.Virtualizations;
 import org.glassfish.virtualization.runtime.VirtualMachineLifecycle;
 import org.glassfish.virtualization.spi.*;
 import org.glassfish.virtualization.util.RuntimeContext;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
 
 /**
  * hidden command to start the virtual machine when the instance is requested to start.
@@ -62,7 +63,7 @@ import org.jvnet.hk2.component.PerLookup;
  */
 @Service
 @Supplemental(value = "start-instance", on= Supplemental.Timing.Before )
-@Scoped(PerLookup.class)
+@PerLookup
 @CommandLock(CommandLock.LockType.NONE)
 public class SupplementalStartInstance implements AdminCommand {
 
@@ -75,7 +76,7 @@ public class SupplementalStartInstance implements AdminCommand {
     @Inject
     Factory<VirtualMachineLifecycle> vmLifecycle;
 
-    @Inject(optional = true)
+    @Inject @Optional
     Virtualizations virtualizations;
 
     @Param(name="_vmStartup", optional=true, defaultValue = "true")

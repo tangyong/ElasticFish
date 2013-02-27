@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -48,13 +48,15 @@ import org.glassfish.virtualization.config.Action;
 import org.glassfish.virtualization.config.Virtualization;
 import org.glassfish.virtualization.config.Virtualizations;
 import org.glassfish.virtualization.util.RuntimeContext;
-import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.*;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.inject.Inject;
 
 /**
  * Abstraction to external command execution
@@ -68,7 +70,7 @@ public class ShellExecutor {
     @Inject
     CommandRunner commandRunner;
 
-    @Inject(optional=true)
+    @Inject @Optional
     Virtualizations virtualizations=null;
 
     @Inject
@@ -194,7 +196,9 @@ public class ShellExecutor {
             }
             params.add(key, value);
         }
-        CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation(commandName, report);
+        //CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation(commandName, report);
+        //TangYong Added temply
+        CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation(commandName, report, null);
         inv.parameters(params);
         inv.execute();
         return (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS);

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,9 +40,8 @@
 
 package org.glassfish.virtualization.util;
 
-import org.glassfish.hk2.scopes.PerLookup;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.virtualization.config.TemplateIndex;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -50,7 +49,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author Jerome Dochez
  */
 @Service(name="VirtualizationType")
-@Scoped(PerLookup.class)
+@PerLookup
 public class VirtualizationType extends ValueBasedTemplateIndex {
 
     public enum Type {libvirt, OVM, virtualbox, Native, OVM30}

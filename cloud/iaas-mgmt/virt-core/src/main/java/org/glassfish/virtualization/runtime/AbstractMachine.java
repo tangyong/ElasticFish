@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -55,29 +55,25 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 
+import javax.inject.Inject;
+
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.common.util.admin.AuthTokenManager;
-import org.glassfish.hk2.PostConstruct;
+import org.glassfish.hk2.api.PostConstruct;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.virtualization.config.MachineConfig;
 import org.glassfish.virtualization.config.Template;
 import org.glassfish.virtualization.config.VirtUser;
 import org.glassfish.virtualization.config.Virtualizations;
-import org.glassfish.virtualization.spi.Disk;
-import org.glassfish.virtualization.spi.FileOperations;
 import org.glassfish.virtualization.spi.*;
 import org.glassfish.virtualization.util.Host;
 import org.glassfish.virtualization.util.RuntimeContext;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
-
 
 /**
  * Local or Remoate Machine capabilities include creating a virtual machine
  *
  * @author Jerome Dochez
  */
-
-
 public abstract class AbstractMachine implements PostConstruct, Machine {
 
     final protected MachineConfig config;
@@ -95,7 +91,7 @@ public abstract class AbstractMachine implements PostConstruct, Machine {
     TemplateRepository templateRepository;
 
     @Inject
-    Habitat habitat;
+    ServiceLocator habitat;
 
     @Inject
     Host host;
@@ -205,8 +201,11 @@ public abstract class AbstractMachine implements PostConstruct, Machine {
     @Override
     public synchronized VirtUser getUser() {
         if (myself==null) {
-            myself = LocalUser.myself(habitat);
+        	//TangYong Modify
+            LocalUser.myself(habitat);
+            myself = habitat.getService(LocalUser.class);
         }
+        
         return myself;
     }
 
@@ -315,7 +314,7 @@ public abstract class AbstractMachine implements PostConstruct, Machine {
         final String diskLocation = config.getDisksLocation();
         final Machine target = this;
         try {
-            diskFuture = habitat.getComponent(ExecutorService.class).submit(
+            diskFuture = habitat.getService(ExecutorService.class).submit(
                     new Callable<StorageVol>() {
                         @Override
                         public StorageVol call() throws Exception {
@@ -411,7 +410,7 @@ public abstract class AbstractMachine implements PostConstruct, Machine {
     protected File createCustomizationFile (File customizationDir, Cluster cluster, String name , Template template) throws IOException{
          // create the customized properties.
         Properties customizedProperties = new Properties();
-        Config configuration = habitat.getComponent(Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
+        Config configuration = habitat.getService(Config.class, ServerEnvironment.DEFAULT_INSTANCE_NAME);
         NetworkListener nl = configuration.getNetworkConfig().getNetworkListener("admin-listener");
         // soon enough, I need to replace this with a token and keep this information from being stored in the
         // customization disk.
@@ -429,7 +428,7 @@ public abstract class AbstractMachine implements PostConstruct, Machine {
         }
         customizedProperties.put("UserName", vmUser.getName());
 
-        AuthTokenManager tokenMgr = habitat.getComponent(AuthTokenManager.class);
+        AuthTokenManager tokenMgr = habitat.getService(AuthTokenManager.class);
         customizedProperties.put("AuthToken", tokenMgr.createToken(30L*60L*1000L));
         customizedProperties.put("StartToken", tokenMgr.createToken(30L*60L*1000L));
         File customization =new File(customizationDir, "customization");
@@ -446,7 +445,7 @@ public abstract class AbstractMachine implements PostConstruct, Machine {
     }
 
     protected Disk prepareCustomization(File custDir, File custFile,  String name) throws IOException {
-        Disk custDisk = habitat.getComponent(Disk.class);
+        Disk custDisk = habitat.getService(Disk.class);
         // create the iso file.
         custDisk.createISOFromDirectory(custDir, custFile);
         return custDisk;

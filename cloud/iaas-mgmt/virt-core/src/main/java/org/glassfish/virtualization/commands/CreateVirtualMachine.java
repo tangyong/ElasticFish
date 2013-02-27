@@ -40,10 +40,13 @@
 
 package org.glassfish.virtualization.commands;
 
+import javax.inject.Inject;
+
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
-import org.glassfish.hk2.Services;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.virtualization.config.Template;
 import org.glassfish.virtualization.config.Virtualizations;
 import org.glassfish.virtualization.runtime.VirtualClusters;
@@ -51,17 +54,14 @@ import org.glassfish.virtualization.spi.*;
 import org.glassfish.virtualization.runtime.TemplateInstanceImpl;
 import org.glassfish.virtualization.util.EventSourceImpl;
 import org.glassfish.virtualization.util.RuntimeContext;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
 
 /**
  * Creates a new virtual machine on a target machine
  * @author Jerome Dochez
  */
 @Service(name="create-vm")
-@Scoped(PerLookup.class)
+@PerLookup
 public class CreateVirtualMachine implements AdminCommand {
 
     @Param(name="template")
@@ -83,7 +83,7 @@ public class CreateVirtualMachine implements AdminCommand {
     Virtualizations virts;
 
     @Inject
-    Services services;
+    ServiceLocator services;
 
     @Override
     public void execute(AdminCommandContext context) {

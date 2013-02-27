@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,16 +42,15 @@ package org.glassfish.virtualization;
 
 
 import org.glassfish.api.admin.ServerEnvironment;
-import org.glassfish.hk2.Services;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.virtualization.config.Template;
 import org.glassfish.virtualization.config.Virtualization;
 import org.glassfish.virtualization.runtime.DefaultAllocationStrategy;
-import org.glassfish.virtualization.spi.VirtualCluster;
 import org.glassfish.virtualization.spi.*;
 import org.glassfish.virtualization.config.ServerPoolConfig;
 import org.glassfish.virtualization.config.Virtualizations;
 import org.glassfish.virtualization.util.RuntimeContext;
-import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.*;
 
@@ -59,6 +58,8 @@ import java.beans.PropertyChangeEvent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+
+import javax.inject.Inject;
 
 
 /**
@@ -69,10 +70,21 @@ import java.util.logging.Level;
 @Service
 public class IAASImpl implements IAAS, ConfigListener {
 
-    private final Services services;
+	@Inject
+    ServiceLocator services;
+    
     private final Map<String, Virtualization> virtConfigs = new ConcurrentHashMap<String, Virtualization>();
     private final Map<String, ServerPool> groups = new ConcurrentHashMap<String, ServerPool>();
     private final Map<String, VirtualCluster> virtualClusterMap = new ConcurrentHashMap<String, VirtualCluster>();
+    
+    @Inject @Optional
+    Virtualizations virtualizations;
+    
+    @Inject
+    Transactions transactions;
+    
+    @Inject
+    ServerEnvironment env;
 
     @Override
     public Iterator<ServerPool> iterator() {
@@ -84,19 +96,14 @@ public class IAASImpl implements IAAS, ConfigListener {
         return groups.get(groupName);
     }
 
-    public IAASImpl(@Inject(optional = true) Virtualizations virtualizations,
-                    @Inject Transactions transactions,
-                    @Inject ServerEnvironment env,
-                    @Inject final Services services) {
-
-        this.services = services;
+    public IAASImpl() {
         // first executeAndWait the fping command to populate our arp table.
         transactions.addListenerForType(Virtualization.class, this);
         if (virtualizations==null) {
             transactions.addListenerForType(Virtualizations.class, new ConfigListener() {
                 @Override
                 public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
-                    Virtualizations virts = services.forContract(Virtualizations.class).get();
+                    Virtualizations virts = services.getService(Virtualizations.class);
                     for (Virtualization virt : virts.getVirtualizations()) {
                         processVirtualization(virt);
                     }
@@ -146,8 +153,8 @@ public class IAASImpl implements IAAS, ConfigListener {
         if (groups.containsKey(serverPoolConfig.getName())) {
             return groups.get(serverPoolConfig.getName());
         }
-        ServerPoolFactory spf = services.forContract(ServerPoolFactory.class).named(
-                serverPoolConfig.getVirtualization().getType()).get();
+        ServerPoolFactory spf = services.getService(ServerPoolFactory.class, 
+                serverPoolConfig.getVirtualization().getType());
 
         if (spf==null) {
             RuntimeContext.logger.log(Level.SEVERE, "Cannot find an implementation of the " +
@@ -162,13 +169,13 @@ public class IAASImpl implements IAAS, ConfigListener {
 
     @Override
     public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
-        Virtualizations virtualizations = services.forContract(Virtualizations.class).get();
+        Virtualizations virtualizations = services.getService(Virtualizations.class);
         Set<String> existingVirts = new HashSet<String>(virtConfigs.keySet());
         for (Virtualization virt : virtualizations.getVirtualizations()) {
             processVirtualization(virt);
             existingVirts.remove(virt.getName());
         }
-        TemplateRepository templateRepository = services.forContract(TemplateRepository.class).get();
+        TemplateRepository templateRepository = services.getService(TemplateRepository.class);
         for (String virtName : existingVirts) {
             System.out.println("Deleted virtualization : " + virtName);
             // this need to be improved by moving it to the Virtualization class.

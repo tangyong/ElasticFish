@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,10 +40,11 @@
 
 package org.glassfish.virtualization.runtime;
 
-import org.glassfish.hk2.inject.Injector;
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.virtualization.config.VirtUser;
 import org.glassfish.virtualization.spi.OsInterface;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.TransactionFailure;
 
@@ -57,8 +58,9 @@ public class LocalUser implements VirtUser {
 
     String authMethod=""; // not sure we will ever need another value.
 
-    public static LocalUser myself(Injector injector) {
-        return injector.inject(new LocalUser());
+    //TangYong Added
+    public static void myself(ServiceLocator injector) {
+    	injector.inject(new LocalUser());
     }
 
     private LocalUser() {

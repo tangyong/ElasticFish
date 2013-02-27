@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,8 +47,7 @@ import org.glassfish.virtualization.spi.OsInterface;
 import org.glassfish.virtualization.config.ServerPoolConfig;
 import org.glassfish.virtualization.util.OsInterfaceFactory;
 import org.glassfish.virtualization.util.RuntimeContext;
-import org.jvnet.hk2.annotations.Factory;
-import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.*;
@@ -57,12 +56,14 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
+import javax.inject.Inject;
+
 /**
  * OS specifc commands for Ubuntu linux
  * @author Jerome Dochez
  */
 @Service(name="ubuntu")
-@Factory(OsInterfaceFactory.class)
+@FactoryFor(OsInterfaceFactory.class)
 public class Ubuntu implements OsInterface {
 
     @Inject

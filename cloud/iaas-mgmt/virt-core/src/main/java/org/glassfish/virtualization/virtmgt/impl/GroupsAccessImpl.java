@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,16 +39,15 @@
  */
 package org.glassfish.virtualization.virtmgt.impl;
 
-import org.glassfish.hk2.inject.Injector;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.virtualization.spi.ServerPool;
 import org.glassfish.virtualization.spi.IAAS;
 import org.glassfish.virtualization.virtmgt.GroupAccess;
 import org.glassfish.virtualization.virtmgt.GroupsAccess;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
+import javax.inject.Inject;
 
 /**
  * Gateway to serverPool access instances.
@@ -57,12 +56,13 @@ import java.util.Iterator;
 @Service
 public class GroupsAccessImpl implements GroupsAccess {
 
-    final IAAS groupMgt;
-    final Injector injector;
+	@Inject
+    IAAS groupMgt;
+	
+	@Inject
+    ServiceLocator injector;
 
-    public GroupsAccessImpl(@Inject Injector injector, @Inject IAAS groupMgt) {
-        this.injector = injector;
-        this.groupMgt = groupMgt;
+    public GroupsAccessImpl() {
     }
 
     @Override

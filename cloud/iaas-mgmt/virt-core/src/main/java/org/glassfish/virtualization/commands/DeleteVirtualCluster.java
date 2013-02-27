@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,16 +45,14 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.virtualization.config.VirtualMachineConfig;
 import org.glassfish.virtualization.spi.VirtualCluster;
 import org.glassfish.virtualization.runtime.VirtualClusters;
 import org.glassfish.virtualization.runtime.VirtualMachineLifecycle;
 import org.glassfish.virtualization.spi.*;
 import org.glassfish.virtualization.util.RuntimeContext;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,11 +61,13 @@ import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 
+import javax.inject.Inject;
+
 /**
  * Deletes a virtual cluster (temporary, will be probably retroffited into normal delete-cluster command).
  */
 @Service(name="delete-virtual-cluster")
-@Scoped(PerLookup.class)
+@PerLookup
 public class DeleteVirtualCluster implements AdminCommand {
 
     @Param(primary=true)

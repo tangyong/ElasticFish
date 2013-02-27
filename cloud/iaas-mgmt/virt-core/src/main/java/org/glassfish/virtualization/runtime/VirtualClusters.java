@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,12 +45,13 @@ import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.virtualization.spi.IAAS;
 import org.glassfish.virtualization.spi.VirtException;
 import org.glassfish.virtualization.spi.VirtualCluster;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.inject.Inject;
 
 /**
  * Manages instances of virtual clusters
@@ -58,13 +59,15 @@ import java.util.Map;
 @Service
 public class VirtualClusters {
 
-    final Domain domain;
-    final IAAS iaas;
+	@Inject
+    Domain domain;
+	
+	@Inject
+    IAAS iaas;
+	
     final Map<String, VirtualCluster> clusterMap = new HashMap<String, VirtualCluster>();
 
-    public VirtualClusters(@Inject IAAS iaas, @Inject Domain domain) {
-        this.iaas = iaas;
-        this.domain = domain;
+    public VirtualClusters() {
     }
 
     public void add(VirtualCluster vc) {

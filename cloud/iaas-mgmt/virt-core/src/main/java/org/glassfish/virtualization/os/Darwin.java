@@ -41,7 +41,7 @@
 package org.glassfish.virtualization.os;
 
 import org.glassfish.virtualization.util.OsInterfaceFactory;
-import org.jvnet.hk2.annotations.Factory;
+import org.jvnet.hk2.annotations.FactoryFor;
 import org.jvnet.hk2.annotations.Service;
 
 import java.util.Map;
@@ -52,7 +52,7 @@ import java.util.Scanner;
  * @author Jerome Dochez
  */
 @Service(name="Mac_OS_X")
-@Factory(OsInterfaceFactory.class)
+@FactoryFor(OsInterfaceFactory.class)
 public class Darwin extends Ubuntu {
 
     @Override

@@ -53,27 +53,28 @@ import org.glassfish.virtualization.runtime.VirtualClusters;
 import org.glassfish.virtualization.runtime.VirtualMachineLifecycle;
 import org.glassfish.virtualization.spi.*;
 import org.glassfish.virtualization.util.RuntimeContext;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.types.Property;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
+
+import javax.inject.Inject;
+
 import org.glassfish.api.admin.ExecuteOn;
 import org.glassfish.api.admin.RestEndpoint;
 import org.glassfish.api.admin.RestEndpoints;
 import org.glassfish.api.admin.RuntimeType;
+import org.glassfish.hk2.api.PerLookup;
 
 /**
  * Administrative command to register a virtual machine is started and can be interfaced.
  * @author Jerome Dochez
  */
 @Service(name="register-startup")
-@Scoped(PerLookup.class)
+@PerLookup
 @CommandLock(CommandLock.LockType.NONE)
 @ExecuteOn(RuntimeType.DAS)
 @RestEndpoints({

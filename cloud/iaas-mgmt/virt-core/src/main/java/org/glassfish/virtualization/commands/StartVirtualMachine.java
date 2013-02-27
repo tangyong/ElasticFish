@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,21 +39,21 @@
  */
 package org.glassfish.virtualization.commands;
 
+import javax.inject.Inject;
+
 import org.glassfish.api.admin.AdminCommand;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.virtualization.runtime.VirtualMachineLifecycle;
 import org.glassfish.virtualization.spi.VirtException;
 import org.glassfish.virtualization.spi.VirtualMachine;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
 
 /**
  * Start a stopped virtual machine.
  * @author Jerome Dochez
  */
 @Service(name="start-vm")
-@Scoped(PerLookup.class)
+@PerLookup
 public class StartVirtualMachine extends VirtualMachineMgt implements AdminCommand {
     @Inject
     VirtualMachineLifecycle vmLifecycle;

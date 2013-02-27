@@ -57,19 +57,20 @@ import org.glassfish.virtualization.util.RuntimeContext;
 import org.glassfish.virtualization.util.ServiceType;
 import org.glassfish.virtualization.virtmgt.GroupAccess;
 import org.glassfish.virtualization.virtmgt.GroupsAccess;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javax.inject.Inject;
+
 import org.glassfish.api.admin.CommandLock;
+import org.glassfish.hk2.api.PerLookup;
 
 @Service(name="create-virtual-cluster")
-@Scoped(PerLookup.class)
+@PerLookup
 @CommandLock(CommandLock.LockType.NONE)
 public class CreateVirtualCluster implements AdminCommand {
 
@@ -91,10 +92,10 @@ public class CreateVirtualCluster implements AdminCommand {
     @Inject
     GroupsAccess groups;
 
-    @Inject(optional=true)
+    @Inject @Optional
     Virtualizations virts=null;
 
-    @Inject(optional=true)
+    @Inject @Optional
     TemplateRepository templateRepository;
 
     @Inject

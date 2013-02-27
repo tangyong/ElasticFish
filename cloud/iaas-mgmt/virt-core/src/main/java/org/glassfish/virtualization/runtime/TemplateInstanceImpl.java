@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,7 @@
 
 package org.glassfish.virtualization.runtime;
 
-import org.glassfish.hk2.Services;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.virtualization.config.Template;
 import org.glassfish.virtualization.config.TemplateIndex;
 import org.glassfish.virtualization.config.Virtualizations;
@@ -65,9 +65,8 @@ public class TemplateInstanceImpl implements TemplateInstance {
     final TemplateCustomizer customizer;
     final Virtualizations virtualizations;
 
-    public TemplateInstanceImpl(Services services, Template config) {
+    public TemplateInstanceImpl(ServiceLocator services, Template config) {
         this.config = config;
-        TemplateCustomizer tmpCustomizer = null;
         for (TemplateIndex indexPersistence : config.getIndexes()) {
             indexes.add(TemplateCondition.from(indexPersistence));
         }
@@ -75,10 +74,16 @@ public class TemplateInstanceImpl implements TemplateInstance {
         // so far, it's ugly, customizers must use the (VirtualizationType-ServiceType) name.
         TemplateIndex serviceType  = config.byName("ServiceType");
         TemplateIndex virtType = config.byName("VirtualizationType");
-        TemplateCustomizer cust = services.forContract(TemplateCustomizer.class).named(
-                        virtType.getValue()+ "-"+serviceType.getValue()).get();
-        customizer = cust==null?services.forContract(TemplateCustomizer.class).named(serviceType.getValue()).get():cust;
-        virtualizations = services.forContract(Virtualizations.class).get();
+        //TemplateCustomizer cust = services.forContract(TemplateCustomizer.class).named(
+        //                virtType.getValue()+ "-"+serviceType.getValue()).get();
+        //TangYong Modified
+        TemplateCustomizer cust = services.getService(TemplateCustomizer.class, virtType.getValue()+ "-"+serviceType.getValue());
+        //customizer = cust==null?services.forContract(TemplateCustomizer.class).named(serviceType.getValue()).get():cust;
+        //TangYong Modified
+        customizer = cust==null?services.getService(TemplateCustomizer.class, serviceType.getValue()):cust;
+        //virtualizations = services.forContract(Virtualizations.class).get();
+        //TangYong Modified
+        virtualizations = services.getService(Virtualizations.class);
     }
 
     @Override

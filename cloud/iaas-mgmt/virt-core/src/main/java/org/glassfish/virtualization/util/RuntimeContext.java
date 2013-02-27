@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,6 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.virtualization.config.Virtualizations;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
@@ -57,6 +56,8 @@ import java.io.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
+
+import javax.inject.Inject;
 
 /**
  * Defines the virtualization runtime context
@@ -105,7 +106,9 @@ public class RuntimeContext {
             }
             params.add(key, value);
         }
-        CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation(commandName, report);
+        //CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation(commandName, report);
+        //TangYong Modify(needing to confirm in the future)
+        CommandRunner.CommandInvocation inv = commandRunner.getCommandInvocation(commandName, report, null);
         inv.parameters(params);
         inv.execute();
         return (report.getActionExitCode()==ActionReport.ExitCode.SUCCESS);

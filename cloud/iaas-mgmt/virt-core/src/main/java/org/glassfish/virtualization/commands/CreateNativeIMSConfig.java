@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,23 +41,20 @@
 package org.glassfish.virtualization.commands;
 
 import com.sun.enterprise.config.serverbeans.Domain;
-import com.sun.enterprise.module.bootstrap.Populator;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.ActionReport;
-import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommand;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.config.support.GlassFishConfigBean;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.internal.api.ServerContext;
 import org.glassfish.virtualization.config.*;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.*;
 
+import javax.inject.Inject;
 import javax.xml.stream.XMLStreamReader;
 import java.beans.PropertyVetoException;
 import java.io.*;
@@ -71,7 +68,7 @@ import java.util.logging.Logger;
  * @author Jerome Dochez
  */
 @Service(name="create-ims-config-native")
-@Scoped(PerLookup.class)
+@PerLookup
 public class CreateNativeIMSConfig implements AdminCommand {
 
     @Inject
@@ -81,7 +78,7 @@ public class CreateNativeIMSConfig implements AdminCommand {
     ServerEnvironment env;
 
     @Inject
-    Habitat habitat;
+    ServiceLocator habitat;
 
     @Inject
     Domain domain;
@@ -148,7 +145,7 @@ public class CreateNativeIMSConfig implements AdminCommand {
                             // todo : change this in GlassFishConfigBean rather than Dom
                             DomDocument document = parser.parse(url,  new DomDocument(habitat) {
                                 @Override
-                                public Dom make(Habitat habitat, XMLStreamReader in, Dom parent, ConfigModel model) {
+                                public Dom make(ServiceLocator habitat, XMLStreamReader in, Dom parent, ConfigModel model) {
                                     if (parent instanceof GlassFishConfigBean) {
                                         return new GlassFishConfigBean(habitat, this, (GlassFishConfigBean) parent, model, in);
                                     } else {

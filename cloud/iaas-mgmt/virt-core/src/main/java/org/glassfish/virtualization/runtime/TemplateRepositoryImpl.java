@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,14 +42,14 @@ package org.glassfish.virtualization.runtime;
 
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
-import org.glassfish.hk2.Services;
+
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.virtualization.config.ServerPoolConfig;
 import org.glassfish.virtualization.config.Template;
 import org.glassfish.virtualization.config.Virtualization;
 import org.glassfish.virtualization.config.Virtualizations;
 import org.glassfish.virtualization.spi.*;
 import org.glassfish.virtualization.util.RuntimeContext;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
@@ -57,6 +57,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.inject.Inject;
 
 /**
  * Implementation of the {@link TemplateRepository} interface
@@ -68,11 +70,26 @@ public class TemplateRepositoryImpl implements TemplateRepository {
     final File location;
     final Logger logger = LogDomains.getLogger(TemplateRepositoryImpl.class, LogDomains.VIRTUALIZATION_LOGGER);
     final List<TemplateInstance> templates = new ArrayList<TemplateInstance>();
-    final Services services;
+    
+    @Inject
+    ServiceLocator services;
+    
+    @Inject
+    Virtualizations virts;
 
+    /*
     public TemplateRepositoryImpl(@Inject Services services, @Inject Virtualizations virts) {
         location = new File(virts.getTemplatesLocation());
         this.services = services;
+        for (Virtualization virt : virts.getVirtualizations()) {
+            for (Template template : virt.getTemplates()) {
+                templates.add(new TemplateInstanceImpl(services, template));
+            }
+        }
+    }*/
+    //TangYong Added
+    public TemplateRepositoryImpl() {
+        location = new File(virts.getTemplatesLocation());
         for (Virtualization virt : virts.getVirtualizations()) {
             for (Template template : virt.getTemplates()) {
                 templates.add(new TemplateInstanceImpl(services, template));
@@ -112,7 +129,7 @@ public class TemplateRepositoryImpl implements TemplateRepository {
         // now we should copy this template to all available server pools.
         Virtualization virt = (Virtualization) config.getParent();
         for (ServerPoolConfig pool : virt.getServerPools()) {
-            ServerPool serverPool = services.forContract(IAAS.class).get().byName(pool.getName());
+            ServerPool serverPool = services.getService(IAAS.class).byName(pool.getName());
             try {
                 serverPool.install(templateInstance);
             } catch (IOException e) {

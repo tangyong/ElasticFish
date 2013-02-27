@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,7 +39,6 @@
  */
 package org.glassfish.virtualization.runtime;
 
-import org.glassfish.virtualization.config.Template;
 import org.glassfish.virtualization.config.Virtualization;
 import org.glassfish.virtualization.spi.Machine;
 import org.glassfish.virtualization.util.RuntimeContext;
@@ -47,7 +46,6 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.Dom;
 
 import java.io.IOException;
-import java.lang.Object;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
@@ -115,7 +113,7 @@ class TemplateCaching {
             @Override
             public void run() {
                 int vmInStartup = Dom.unwrap(virtualization).getHabitat().
-                        forContract(VirtualMachineLifecycle.class).get().vmInStartup();
+                        getService(VirtualMachineLifecycle.class).vmInStartup();
                 if (vmInStartup>0) {
                     RuntimeContext.logger.log(Level.INFO, "IMS in the process of allocating "
                             + vmInStartup + " virtual machines, cache refresh delayed");

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,7 +57,7 @@ import org.glassfish.virtualization.spi.VirtException;
 import org.glassfish.virtualization.spi.VirtualMachine;
 import org.glassfish.virtualization.spi.VirtualMachineInfo;
 import org.glassfish.virtualization.util.RuntimeContext;
-import org.jvnet.hk2.annotations.Inject;
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 
 import java.io.File;
@@ -70,6 +70,8 @@ import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
 /**
  * Service to register virtual machine lifecycle tokens.
  * @author Jerome Dochez
@@ -77,10 +79,15 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class VirtualMachineLifecycle {
 
-    final TemplateRepository templateRepository;
+	@Inject
+    TemplateRepository templateRepository;
+	
     final Map<String, CountDownLatch> inStartup = new HashMap<String, CountDownLatch>();
-    final Domain domain;
-    @Inject(optional = true)
+    
+    @Inject
+    Domain domain;
+    
+    @Inject @Optional
     private Virtualizations virtualizations;
 
     @Inject
@@ -89,9 +96,7 @@ public class VirtualMachineLifecycle {
     @Inject
     AuthTokenManager authTokenManager;
 
-    public VirtualMachineLifecycle(@Inject TemplateRepository templateRepository, @Inject Domain domain) {
-        this.templateRepository = templateRepository;
-        this.domain = domain;
+    public VirtualMachineLifecycle() {
     }
 
     public synchronized CountDownLatch inStartup(String name) {
