@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,6 @@ import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.api.admin.config.Named;
 import org.glassfish.config.support.Create;
 import org.glassfish.config.support.CrudResolver;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
@@ -55,6 +54,8 @@ import org.jvnet.hk2.config.types.Property;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.inject.Inject;
 
 /**
  * Configuration of a template, for now only its name. Will need to be refined.

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,21 +40,22 @@
 
 package org.glassfish.virtualization.impl;
 
-import org.glassfish.api.Startup;
-import org.glassfish.hk2.Factory;
-import org.glassfish.hk2.PostConstruct;
-import org.glassfish.hk2.Services;
+import org.glassfish.api.StartupRunLevel;
+//import org.glassfish.hk2.Services;
+import org.glassfish.hk2.api.PostConstruct;
+import org.jvnet.hk2.annotations.Optional;
 import org.jvnet.hk2.annotations.Service;
 import org.glassfish.virtualization.config.Virtualization;
 import org.glassfish.virtualization.config.Virtualizations;
 import org.glassfish.virtualization.spi.IAAS;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.config.ConfigListener;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.Transactions;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 import java.beans.PropertyChangeEvent;
+
+import javax.inject.Inject;
 
 /**
  * IAAS bootstrap code to avoid loading the IMS implementation (and its dependencies)
@@ -63,21 +64,17 @@ import java.beans.PropertyChangeEvent;
  * @author Jerome Dochez
  */
 @Service
-public class IAASBootstrap implements Startup, PostConstruct {
+@StartupRunLevel
+public class IAASBootstrap implements PostConstruct {
 
-    @Inject(optional=true)
+    @Inject @Optional
     Virtualizations virtualizations=null;
 
     @Inject
     Transactions transactions;
 
-    @Inject
-    Services services;
-
-    @Override
-    public Lifecycle getLifecycle() {
-        return Lifecycle.SERVER;
-    }
+    //@Inject
+    //Services services;
 
     @Override
     public void postConstruct() {
@@ -85,12 +82,12 @@ public class IAASBootstrap implements Startup, PostConstruct {
             transactions.addListenerForType(Virtualizations.class, new ConfigListener() {
                     @Override
                     public UnprocessedChangeEvents changed(PropertyChangeEvent[] propertyChangeEvents) {
-                        services.forContract(IAAS.class).get();
+                        //services.forContract(IAAS.class).get();
                         return null;
                     }
                 });
         } else {
-            services.forContract(IAAS.class).get();
+            //services.forContract(IAAS.class).get();
         }
     }
 }

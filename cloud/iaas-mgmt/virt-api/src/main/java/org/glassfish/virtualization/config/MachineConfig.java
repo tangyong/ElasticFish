@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,11 +45,12 @@ import org.glassfish.api.Param;
 import org.glassfish.api.admin.AdminCommandContext;
 import org.glassfish.config.support.Create;
 import org.glassfish.config.support.CrudResolver;
-import org.jvnet.hk2.annotations.Inject;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.*;
 
 import java.beans.PropertyVetoException;
+
+import javax.inject.Inject;
 
 /**
  * A physical machine can be represented by either a name, an IP or a mac-address
@@ -144,7 +145,7 @@ public interface MachineConfig extends ConfigBeanProxy {
 
         @Override
         public <T extends ConfigBeanProxy> T resolve(AdminCommandContext context, Class<T> type)  {
-            Virtualization virt = virtualization==null?virts.getVirtualizations().get(0):virts.byName(virtualization);
+            Virtualization virt = (Virtualization) (virtualization==null?virts.getVirtualizations().get(0):virts.byName(virtualization));
             ServerPoolConfig config = virt.serverPoolByName(serverPool);
             if (config!=null) {
                 return (T) config.machineByName(machine);

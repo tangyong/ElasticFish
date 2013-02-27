@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -60,7 +60,7 @@ public abstract class TemplateCondition {
      */
     public static TemplateCondition from(TemplateIndex persistence) {
         TemplateCondition condition = Dom.unwrap(persistence).getHabitat().
-                getComponent(TemplateCondition.class, persistence.getType());
+        		getService(TemplateCondition.class, persistence.getType());
         if (condition==null) {
             condition = new KeyValueType();
         }

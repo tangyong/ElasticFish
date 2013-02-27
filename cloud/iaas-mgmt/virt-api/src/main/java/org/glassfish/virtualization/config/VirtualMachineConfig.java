@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,6 @@ import com.sun.enterprise.config.serverbeans.VirtualMachineExtension;
 import org.glassfish.api.admin.AdminCommandLock;
 import org.glassfish.api.admin.CommandLock;
 import org.glassfish.api.admin.config.Named;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.Property;
 
@@ -55,6 +54,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import org.glassfish.api.admin.RestRedirect;
 import org.glassfish.api.admin.RestRedirects;
+import org.glassfish.hk2.api.ServiceLocator;
 
 /**
  * Persisted information about created virtual machine
@@ -86,8 +86,8 @@ public interface VirtualMachineConfig extends Named, ConfigBeanProxy, VirtualMac
            try {
 
                // this code can happen on any thread, so we manually acquire the shared lock.
-               Habitat habitat = Dom.unwrap(cluster).getHabitat();
-               AdminCommandLock adminCommandLock = habitat.getComponent(AdminCommandLock.class);
+               ServiceLocator habitat = Dom.unwrap(cluster).getHabitat();
+               AdminCommandLock adminCommandLock = habitat.getService(AdminCommandLock.class);
                Lock lock=null;
                try {
 
