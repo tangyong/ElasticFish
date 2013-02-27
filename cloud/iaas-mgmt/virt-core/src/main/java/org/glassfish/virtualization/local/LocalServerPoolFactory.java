@@ -58,27 +58,18 @@ import org.jvnet.hk2.annotations.Service;
 @Service(name="Native")
 public class LocalServerPoolFactory implements ServerPoolFactory {
 
-	@Inject
-    TemplateRepository templateRepository;
-	
-	@Inject
-    Domain domain;
-	
-	@Inject
-    ServerContext environment;
+    final private TemplateRepository templateRepository;
+    final private Domain domain;
+    final private ServerContext environment;
 
-    /*
-    public LocalServerPoolFactory(@Inject TemplateRepository templateRepository,
-                                  @Inject Domain domain,
-                                  @Inject ServerContext environment) {
+    @Inject
+    public LocalServerPoolFactory( TemplateRepository templateRepository,
+                                  Domain domain,
+                                  ServerContext environment) {
         this.templateRepository = templateRepository;
         this.domain = domain;
         this.environment = environment;
     }
-    */
-    //TangYong Added
-    public LocalServerPoolFactory() {
-     }
 
     @Override
     public ServerPool build(ServerPoolConfig config) {

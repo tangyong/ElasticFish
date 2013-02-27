@@ -42,7 +42,6 @@ package org.glassfish.virtualization.runtime;
 
 import com.sun.enterprise.util.io.FileUtils;
 import com.sun.logging.LogDomains;
-
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.virtualization.config.ServerPoolConfig;
 import org.glassfish.virtualization.config.Template;
@@ -70,26 +69,12 @@ public class TemplateRepositoryImpl implements TemplateRepository {
     final File location;
     final Logger logger = LogDomains.getLogger(TemplateRepositoryImpl.class, LogDomains.VIRTUALIZATION_LOGGER);
     final List<TemplateInstance> templates = new ArrayList<TemplateInstance>();
-    
-    @Inject
-    ServiceLocator services;
-    
-    @Inject
-    Virtualizations virts;
+    final ServiceLocator services;
 
-    /*
-    public TemplateRepositoryImpl(@Inject Services services, @Inject Virtualizations virts) {
+    @Inject
+    public TemplateRepositoryImpl(ServiceLocator services, Virtualizations virts) {
         location = new File(virts.getTemplatesLocation());
         this.services = services;
-        for (Virtualization virt : virts.getVirtualizations()) {
-            for (Template template : virt.getTemplates()) {
-                templates.add(new TemplateInstanceImpl(services, template));
-            }
-        }
-    }*/
-    //TangYong Added
-    public TemplateRepositoryImpl() {
-        location = new File(virts.getTemplatesLocation());
         for (Virtualization virt : virts.getVirtualizations()) {
             for (Template template : virt.getTemplates()) {
                 templates.add(new TemplateInstanceImpl(services, template));
