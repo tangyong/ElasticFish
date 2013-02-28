@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,7 @@ import com.sun.enterprise.config.serverbeans.Config;
 import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.config.ConfigExtension;
 import org.glassfish.api.admin.config.Container;
-import org.jvnet.hk2.component.Injectable;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.config.*;
 import org.jvnet.hk2.config.types.PropertyBag;
 
@@ -60,7 +60,7 @@ import java.util.List;
  * @author Bhakti Mehta
  */
 @Configured
-public interface CloudServices extends ConfigBeanProxy, Injectable,ConfigExtension {
+public interface CloudServices extends ConfigBeanProxy, ServiceLocator,ConfigExtension {
 
     @Element("*")
     public List<CloudService> getCloudServices();
