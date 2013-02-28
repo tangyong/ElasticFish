@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -98,7 +98,7 @@ public class ServiceDependencyDiscoveryState extends AbstractPaaSDeploymentState
             //parse glassfish-services.xml to get all declared SRs and SDs
             //Get the first ServicesXMLParser implementation
 
-            ServicesXMLParser parser = habitat.getByContract(ServicesXMLParser.class);
+            ServicesXMLParser parser = habitat.getService(ServicesXMLParser.class);
 
             //1.1 discover all Service References and Descriptions already declared for this application
             ServiceMetadata appServiceMetadata = parser.discoverDeclaredServices(appName, archive);

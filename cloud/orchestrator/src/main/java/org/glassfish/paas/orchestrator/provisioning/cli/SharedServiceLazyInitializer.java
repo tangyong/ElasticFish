@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,8 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.CommandRunner;
 import org.glassfish.api.admin.ParameterMap;
 import org.glassfish.api.deployment.DeploymentContext;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.paas.orchestrator.PaaSDeploymentContext;
 import org.glassfish.paas.orchestrator.ServiceOrchestratorImpl;
 import org.glassfish.paas.orchestrator.config.Services;
@@ -56,10 +58,6 @@ import org.glassfish.paas.orchestrator.service.metadata.ServiceDescription;
 import org.glassfish.paas.orchestrator.service.spi.ProvisionedService;
 import org.glassfish.paas.orchestrator.service.spi.ServiceChangeEvent;
 import org.glassfish.paas.orchestrator.service.spi.ServicePlugin;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Habitat;
-import org.jvnet.hk2.component.PerLookup;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.Transaction;
@@ -71,12 +69,14 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
+
 /**
  * @author: Sandhya Kripalani K
  */
 
 @org.jvnet.hk2.annotations.Service
-@Scoped(PerLookup.class)
+@PerLookup
 public class SharedServiceLazyInitializer {
 
     @Inject
@@ -89,7 +89,7 @@ public class SharedServiceLazyInitializer {
     private CommandRunner commandRunner;
 
     @Inject
-    private Habitat habitat;
+    private ServiceLocator habitat;
 
     @Inject
     private ServiceOrchestratorImpl serviceOrchestrator;
@@ -101,7 +101,7 @@ public class SharedServiceLazyInitializer {
     public ProvisionedService provisionService(ServiceDescription sd, ActionReport report) {
 
         if (report == null) {
-            report = habitat.getComponent(ActionReport.class);
+            report = habitat.getService(ActionReport.class);
         }
 
         //create virtual cluster for the shared-service.
@@ -111,8 +111,10 @@ public class SharedServiceLazyInitializer {
 
         // create one virtual cluster per shared-service.
         String virtualClusterName = sd.getName();
-        ActionReport actionReport = habitat.getComponent(ActionReport.class);
-        CommandRunner.CommandInvocation commandInvocation = commandRunner.getCommandInvocation("create-cluster", actionReport);
+        ActionReport actionReport = habitat.getService(ActionReport.class);
+        //CommandRunner.CommandInvocation commandInvocation = commandRunner.getCommandInvocation("create-cluster", actionReport);
+        //TangYong Added (needing to investigate in the future)
+        CommandRunner.CommandInvocation commandInvocation = commandRunner.getCommandInvocation("create-cluster", actionReport, null);
         ParameterMap parameterMap = new ParameterMap();
         parameterMap.add("DEFAULT", virtualClusterName);
         commandInvocation.parameters(parameterMap).execute();

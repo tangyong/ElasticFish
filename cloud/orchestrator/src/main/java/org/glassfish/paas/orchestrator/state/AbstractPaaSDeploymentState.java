@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,13 +43,15 @@ package org.glassfish.paas.orchestrator.state;
 
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
+
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.paas.orchestrator.*;
 import org.glassfish.paas.orchestrator.provisioning.cli.ServiceUtil;
 import org.glassfish.paas.orchestrator.provisioning.util.FailureInducer;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
 
 import java.util.logging.Logger;
+
+import javax.inject.Inject;
 
 /**
  * @author Jagadish Ramu
@@ -61,7 +63,7 @@ public abstract class AbstractPaaSDeploymentState implements PaaSDeploymentState
     protected final static StringManager localStrings = StringManager.getManager(ServiceOrchestratorImpl.class);
 
     @Inject
-    protected Habitat habitat;
+    protected ServiceLocator habitat;
 
     @Inject
     protected ServiceUtil serviceUtil;

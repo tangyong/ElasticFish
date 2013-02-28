@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,15 +40,17 @@
 
 package org.glassfish.paas.orchestrator;
 
+import org.glassfish.api.deployment.archive.ArchiveType;
 import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentUtils;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.paas.orchestrator.provisioning.ServiceScope;
 import org.glassfish.paas.orchestrator.service.metadata.ServiceDescription;
 import org.glassfish.paas.orchestrator.service.metadata.ServiceMetadata;
-import org.jvnet.hk2.annotations.Scoped;
 import org.jvnet.hk2.annotations.Service;
-import org.jvnet.hk2.component.PerLookup;
 
+import javax.inject.Inject;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
@@ -57,14 +59,23 @@ import java.io.InputStream;
  * @author bhavanishankar@java.net
  */
 @Service
-@Scoped(PerLookup.class)
+@PerLookup
 public class ServicesXMLParserImpl implements ServicesXMLParser {
+	
+	//TangYong Added
+	@Inject
+	ServiceLocator locator;
 
     public ServiceMetadata discoverDeclaredServices(String appName, ReadableArchive ra) {
         ServiceMetadata serviceMetadata = null;
         try {
             InputStream inputStream = null;
-            if(DeploymentUtils.isWebArchive(ra)){
+            
+            //TangYong Added
+            ArchiveType warType = locator.getService(ArchiveType.class, "war");
+            boolean isWar = DeploymentUtils.isArchiveOfType(ra, warType, locator);
+            //if(DeploymentUtils.isWebArchive(ra)){
+            if(isWar){
                 inputStream = ra.getEntry("WEB-INF/glassfish-services.xml");
             }else{
                 inputStream = ra.getEntry("META-INF/glassfish-services.xml");

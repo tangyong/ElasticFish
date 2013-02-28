@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.sun.enterprise.deploy.shared.FileArchive;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.logging.LogDomains;
 import org.glassfish.api.admin.AdminCommandLock;
@@ -55,7 +57,7 @@ import org.glassfish.api.deployment.archive.ReadableArchive;
 import org.glassfish.deployment.common.DeploymentException;
 import org.glassfish.embeddable.CommandResult;
 import org.glassfish.embeddable.CommandRunner;
-import org.glassfish.hk2.scopes.Singleton;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.internal.deployment.ExtendedDeploymentContext;
 import org.glassfish.paas.orchestrator.config.*;
 import org.glassfish.paas.orchestrator.provisioning.ServiceInfo;
@@ -70,17 +72,13 @@ import org.glassfish.paas.orchestrator.state.*;
 import org.glassfish.virtualization.spi.VirtualCluster;
 import org.glassfish.virtualization.runtime.VirtualClusters;
 import org.glassfish.virtualization.spi.AllocationStrategy;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Habitat;
-
 
 @org.jvnet.hk2.annotations.Service
-@Scoped(Singleton.class)
+@Singleton
 public class ServiceOrchestratorImpl implements ServiceOrchestrator {
 
     @Inject
-    protected Habitat habitat;
+    protected ServiceLocator habitat;
 
     @Inject
     private ServiceUtil serviceUtil;
@@ -178,7 +176,7 @@ public class ServiceOrchestratorImpl implements ServiceOrchestrator {
     public Set<ServicePlugin> getPlugins() {
         if(pluginsSet == null){
             Set<ServicePlugin> plugins = new LinkedHashSet<ServicePlugin>();
-            plugins.addAll(habitat.getAllByContract(ServicePlugin.class));
+            plugins.addAll(habitat.getAllServices(ServicePlugin.class));
             logger.log(Level.INFO,"discovered.plugins",plugins);
             pluginsSet = plugins;
         }
@@ -232,7 +230,7 @@ public class ServiceOrchestratorImpl implements ServiceOrchestrator {
     private void orchestrateTask(Class[] tasks, String appName, PaaSDeploymentContext pc, boolean deployment) {
 
         for(Class clz : tasks){
-            PaaSDeploymentState state = habitat.getByType(clz.getName());
+            PaaSDeploymentState state = (PaaSDeploymentState)habitat.getService(clz);
             try{
                 state.beforeExecution(pc);
                 state.handle(pc);
@@ -279,10 +277,10 @@ public class ServiceOrchestratorImpl implements ServiceOrchestrator {
         List<Class> rollbackTasksList = tmpTasksList.subList(0, index);
         Collections.reverse(rollbackTasksList);
         for(Class clz : rollbackTasksList){
-            PaaSDeploymentState state = habitat.getByType(clz.getName());
+            PaaSDeploymentState state = (PaaSDeploymentState)habitat.getService(clz);
             Class rollbackClz = state.getRollbackState();
             if(rollbackClz != null){
-                PaaSDeploymentState rollbackState = habitat.getByType(rollbackClz.getName());
+                PaaSDeploymentState rollbackState = (PaaSDeploymentState)habitat.getService(rollbackClz);
                 try{
                     rollbackState.handle(context);
                 }catch(Exception e){
@@ -399,7 +397,7 @@ public class ServiceOrchestratorImpl implements ServiceOrchestrator {
     }
 
     public ServiceMetadata getServices(ReadableArchive archive) throws Exception {
-        ServiceDependencyDiscoveryState state = habitat.getByType(ServiceDependencyDiscoveryState.class);
+        ServiceDependencyDiscoveryState state = habitat.getService(ServiceDependencyDiscoveryState.class);
         PaaSDeploymentContext pc = new PaaSDeploymentContext(archive.getName(), archive);
         return state.getServiceDependencyMetadata(pc, archive.getName(), archive);
     }
@@ -536,7 +534,7 @@ public class ServiceOrchestratorImpl implements ServiceOrchestrator {
         }
         //TODO we are assuming that no two different plugin types will support same service-ref type
         for (ServicePlugin plugin : matchingPlugin) {
-            ServiceProvisioningEngines spes = habitat.getComponent(ServiceProvisioningEngines.class);
+            ServiceProvisioningEngines spes = habitat.getService(ServiceProvisioningEngines.class);
             if (spes != null) {
                 for (ServiceProvisioningEngine spe : spes.getServiceProvisioningEngines()) {
                     if (spe.getType().equalsIgnoreCase(plugin.getServiceType().toString()) && spe.getDefault()) {
@@ -555,7 +553,7 @@ public class ServiceOrchestratorImpl implements ServiceOrchestrator {
     public ServicePlugin getDefaultPlugin(Collection<ServicePlugin> pluginsList, String type) {
         ServicePlugin defaultPlugin = null;
         if(pluginsList != null){
-            ServiceProvisioningEngines spes = habitat.getComponent(ServiceProvisioningEngines.class);
+            ServiceProvisioningEngines spes = habitat.getService(ServiceProvisioningEngines.class);
             if(spes != null){
                 for(ServiceProvisioningEngine spe : spes.getServiceProvisioningEngines()){
                     if(spe.getType().equalsIgnoreCase(type) && spe.getDefault()){

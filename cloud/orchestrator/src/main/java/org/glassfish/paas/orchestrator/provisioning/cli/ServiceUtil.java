@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,8 @@ package org.glassfish.paas.orchestrator.provisioning.cli;
 import com.sun.enterprise.util.i18n.StringManager;
 import com.sun.enterprise.config.serverbeans.Domain;
 import com.sun.logging.LogDomains;
-import org.glassfish.hk2.scopes.Singleton;
+
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.paas.orchestrator.ServiceOrchestratorImpl;
 import org.glassfish.paas.orchestrator.config.*;
 import org.glassfish.paas.orchestrator.config.Service;
@@ -55,9 +56,6 @@ import org.glassfish.paas.orchestrator.service.metadata.ServiceCharacteristics;
 import org.glassfish.paas.orchestrator.service.metadata.ServiceDescription;
 import org.glassfish.paas.orchestrator.service.metadata.TemplateIdentifier;
 import org.glassfish.paas.orchestrator.service.spi.*;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.annotations.Scoped;
-import org.jvnet.hk2.component.Habitat;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.Transaction;
@@ -71,9 +69,12 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 
 @org.jvnet.hk2.annotations.Service
-@Scoped(Singleton.class)
+@Singleton
 public class ServiceUtil {
 
     private static ExecutorService threadPool = Executors.newCachedThreadPool();
@@ -82,7 +83,7 @@ public class ServiceUtil {
     private Domain domain;
 
     @Inject
-    private Habitat habitat;
+    private ServiceLocator habitat;
 
     private static Logger logger = LogDomains.getLogger(ServiceOrchestratorImpl.class,LogDomains.PAAS_LOGGER);
 
@@ -729,7 +730,7 @@ public class ServiceUtil {
 
     public org.glassfish.paas.orchestrator.service.ServiceType getServiceType(String serviceTypeString){
         Collection<org.glassfish.paas.orchestrator.service.ServiceType> serviceTypes =
-                habitat.getAllByContract(org.glassfish.paas.orchestrator.service.ServiceType.class);
+                habitat.getAllServices(org.glassfish.paas.orchestrator.service.ServiceType.class);
         for(org.glassfish.paas.orchestrator.service.ServiceType serviceType : serviceTypes){
             if(serviceType.toString().equals(serviceTypeString)){
                 return serviceType;
@@ -796,7 +797,7 @@ public class ServiceUtil {
     }
 
     private Collection<ServiceChangeListener> getServiceChangeListeners() {
-        return habitat.getAllByContract(ServiceChangeListener.class);
+        return habitat.getAllServices(ServiceChangeListener.class);
     }
 
     private ServiceInfo createServiceInfo(String appName, org.glassfish.paas.orchestrator.service.spi.Service serviceNode,
