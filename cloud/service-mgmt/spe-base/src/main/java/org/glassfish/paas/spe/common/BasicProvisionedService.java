@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -94,7 +94,7 @@ public class BasicProvisionedService implements ProvisionedService {
         String sdServiceType = serviceDescription.getServiceType();
         // TODO :: FIXME >> make serviceType extensible
 
-        Collection<ServiceType> serviceTypes = Globals.getDefaultHabitat().getAllByContract(ServiceType.class);
+        Collection<ServiceType> serviceTypes = Globals.getDefaultHabitat().getAllServices(ServiceType.class);
         for(ServiceType serviceType : serviceTypes){
             if(serviceType.getName().equals(sdServiceType)){
                 return serviceType;
@@ -142,7 +142,7 @@ public class BasicProvisionedService implements ProvisionedService {
      */
     public VirtualMachine getVM() {
         VirtualClusters virtualClusters = Globals.getDefaultHabitat().
-                getByType(VirtualClusters.class);
+                getService(VirtualClusters.class);
         String clusterName = getServiceDescription().getVirtualClusterName();
         VirtualCluster virtualCluster = null;
         try {

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package org.glassfish.paas.spe.common;
 
 import com.sun.logging.LogDomains;
 import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.paas.orchestrator.PaaSDeploymentContext;
 import org.glassfish.paas.orchestrator.provisioning.ServiceInfo;
 import org.glassfish.paas.orchestrator.provisioning.cli.ServiceUtil;
@@ -73,14 +74,15 @@ import org.glassfish.virtualization.spi.VirtualCluster;
 import org.glassfish.virtualization.spi.VirtualMachine;
 import org.glassfish.virtualization.util.ServiceType;
 import org.glassfish.virtualization.util.SimpleSearchCriteria;
-import org.jvnet.hk2.annotations.Inject;
-import org.jvnet.hk2.component.Habitat;
+import org.jvnet.hk2.annotations.Optional;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.inject.Inject;
 
 /**
  * @author bhavanishankar@java.net
@@ -90,23 +92,23 @@ public abstract class ServiceProvisioningEngineBase<T extends org.glassfish.paas
     private static final Logger logger = LogDomains.getLogger(
             ServiceProvisioningEngineBase.class, LogDomains.PAAS_LOGGER);
 
-    @Inject(optional = true)
+    @Inject @Optional
     private TemplateRepository templateRepository;
 
-    @Inject(optional = true)
+    @Inject @Optional
     private VirtualClusters virtualClusters;
 
-    @Inject(optional = true)
+    @Inject @Optional
     private IAAS iaas;
 
     @Inject
     private ServiceUtil serviceUtil;
 
-    @Inject(optional = true)
+    @Inject @Optional
     VirtualMachineLifecycle vmLifecycle;
 
     @Inject
-    private Habitat habitat;
+    private ServiceLocator habitat;
 
     /**
      * Create a service using the service characteristics specified in service-descripion.
